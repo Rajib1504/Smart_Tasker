@@ -67,7 +67,7 @@ const Navbar = () => {
         <h3 className="font-bold text-lg text-center">Create Task</h3>
         <form onSubmit={submitTask}> {/* Wrap inputs inside form */}
           {/* Title Input */}
-          <label className="block text-sm font-medium text-white mt-2">
+          <label className="block text-sm font-medium text-gray-700 mt-2">
             Title <span className="text-red-500">*</span>
           </label>
           <input
@@ -80,7 +80,7 @@ const Navbar = () => {
           />
 
           {/* Description Input */}
-          <label className="block text-sm font-medium text-white mt-2">Description</label>
+          <label className="block text-sm font-medium text-gray-700 mt-2">Description</label>
           <textarea
             maxLength="200"
             name="description"
@@ -94,7 +94,7 @@ const Navbar = () => {
           </div>
 
           {/* Category Selection */}
-          <label className="block text-sm font-medium text-white mt-2">Category</label>
+          <label className="block text-sm font-medium text-gray-700 mt-2">Category</label>
           <select name="category" className="select select-bordered w-full mt-2">
             <option value="To-Do">To-Do</option>
             <option value="In Progress">In Progress</option>
