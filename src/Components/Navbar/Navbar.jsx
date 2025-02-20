@@ -40,18 +40,18 @@ const Navbar = () => {
       
       return (
             <div className=" bg-[#3674B5] py-3 container">
+                  <div className='lg:w-11/12 text-white mx-auto w-full flex justify-between  items-center'>
                   {/* logo  */}
-                  <div className='lg:w-11/12 text-white mx-auto w-full flex justify-between items-center'>
                  <div>
-                  <h1 className="text-3xl font-bold ">Smart_Tasker
+                  <h1 className="lg:text-3xl text-xl md:text-3xl font-bold ml-2 lg:ml-0 ">Smart_Tasker
                   </h1>
                   </div> 
                   {/* links  */}
                   <div>
-                        <ul className="flex gap-2 ">
-                              <li className="btn btn-ghost hover:bg-[#3674B5] hover:border-white"  onClick={()=>document.getElementById('my_modal_1').showModal()}>+ Create Task</li>    
+                        <ul className="flex  items-center justify-end gap-2 ">
+                              {user && <li className="btn btn-ghost btn-xs md:btn-md lg:btn-ghost md:btn-ghost hover:bg-[#3674B5] hover:border-white"  onClick={()=>document.getElementById('my_modal_1').showModal()}>+ Create Task</li>  }  
                               {
-                                user?   <li onClick={logout} className="btn btn-ghost hover:bg-[#3674B5] hover:border-white">{loader ? <span className="loading loading-spinner loading-sm"></span>:"Log out "}</li>:<Link to={'/register'} className="btn btn-ghost hover:bg-[#3674B5] hover:border-white">Sign in</Link>   
+                                user?   <li onClick={logout} className="btn btn-ghost btn-xs md:btn-md lg:btn-ghost md:btn-ghost hover:bg-[#3674B5] hover:border-white">{loader ? <span className="loading loading-spinner loading-sm"></span>:"Log out "}</li>:<Link to={'/register'} className="btn btn-ghost btn-xs md:btn-md lg:btn-ghost md:btn-ghost hover:bg-[#3674B5] hover:border-white">Sign in</Link>   
                               }
                               
                             
