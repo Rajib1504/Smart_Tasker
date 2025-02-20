@@ -4,7 +4,7 @@ import { Clock, Edit, Trash2 } from 'lucide-react';
 const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-6">
-      <div className="w-full max-w-6xl mx-auto">
+      <div className="w-full  mx-auto">
         {/* Header */}
         <header className="mb-6 text-center">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
@@ -31,7 +31,7 @@ const Home = () => {
                     <Clock className="h-4 w-4 mr-1" /> Created at: 2/21/2025
                   </span>
                   <div className="flex gap-2">
-                    <button className="text-yellow-500 hover:text-yellow-600"><Edit size={16} /></button>
+                    <button  className="text-yellow-500 hover:text-yellow-600"><Edit size={16} /></button>
                     <button className="text-red-500 hover:text-red-600"><Trash2 size={16} /></button>
                   </div>
                 </div>
