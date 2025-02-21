@@ -2,12 +2,15 @@ import { toast } from "react-toastify";
 import UseAuth from "../../Hooks/UseAuth/UseAuth";
 import { Link, useNavigate } from "react-router-dom";
 import AxiosPublic from "../../Hooks/UseAxios/AxiosPublic";
-import { useState } from "react";
-import Loading from "../../Shared/Loading/Loading";
+import { useContext, useEffect, useState } from "react";
+import { TaskContext } from "../../context/TaskProvider";
+
 
 
 const Navbar = () => {
       const {user,logOut,Loading:loader,setLoading}=UseAuth()
+    // console.log(user)
+    const { fetchTasks } = useContext(TaskContext);
       const [spiner,setSpiner]=useState(false)
       const axiospublic =AxiosPublic()
       // console.log(axiospublic)
@@ -27,6 +30,7 @@ const Navbar = () => {
                 setLoading(false)
               });
           };
+          // post data 
           const submitTask =async (e) => {
             setSpiner(true)
             e.preventDefault(); 
@@ -36,21 +40,28 @@ const Navbar = () => {
             const description = form.description.value;
             const category = form.category.value;
             const date = new Date().toLocaleString(); 
-          const formData = { title, description, category, date }
-            // console.log({ title, description, category, date });
+            const email = user?.email
+            const name = user?.displayName
+            const userId = user?.uid
+          const formData = { title, description, category, date, email,name,userId }
+            // console.log({ title, description, category, date,email,name,userId });
           const taskData =await axiospublic.post('/tasks',formData)
           // console.log(taskData)
           if(taskData.data.insertedId){
             setSpiner(false)
             document.getElementById('my_modal_1').close()
-            return toast.success("Task created successfully!");
+            form.reset();
+            fetchTasks()
+            toast.success("Task created successfully!");
           }else{
             setSpiner(false)
             document.getElementById('my_modal_1').close()
+            form.reset();
             return toast.error('something went wrong')
           }
           
           };
+          
           
       
       return (
@@ -111,9 +122,7 @@ const Navbar = () => {
           {/* Category Selection */}
           <label className="block text-sm font-medium text-gray-700 mt-2">Category</label>
           <select name="category" className="select select-bordered w-full mt-2">
-            <option value="To-Do">To-Do</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Done">Done</option>
+            <option value="todo">Todo</option>
           </select>
 
           {/* Modal Actions */}

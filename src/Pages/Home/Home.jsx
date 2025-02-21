@@ -1,47 +1,66 @@
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { Clock, Edit, Trash2 } from 'lucide-react';
-import { useState } from "react";
+import { Clock, Edit, Trash2 } from "lucide-react";
+import { useEffect, useContext } from "react";
+import { toast } from "react-toastify";
+import UseAuth from "../../Hooks/UseAuth/UseAuth";
+import AxiosPublic from "../../Hooks/UseAxios/AxiosPublic";
+import { TaskContext } from "../../context/TaskProvider"; // ✅ Context API Use
 
 const Home = () => {
-  const [tasks, setTasks] = useState({
-    todo: [
-      { id: "1", title: "Task 1", description: "Description 1" },
-      { id: "2", title: "Task 2", description: "Description 2" }
-    ],
-    inprogress: [
-      { id: "3", title: "Task 3", description: "Description 3" }
-    ],
-    done: []
-  });
+  const { user } = UseAuth();
+  const axiosPublic = AxiosPublic();
+  const { tasks, fetchTasks } = useContext(TaskContext); // ✅ Context API থেকে Task আনছি
 
-  const handleDragEnd = (result) => {
+  useEffect(() => {
+    if (!user?.email) return;
+    fetchTasks(); // ✅ Context API থেকে Task আনছি
+  }, [user?.email]);
+
+  // ✅ **Drag & Drop Logic**
+  const handleDragEnd = async (result) => {
     if (!result.destination) return;
 
     const { source, destination } = result;
 
-   
+    // **Same Column-এর ভিতরে Move করলে Reorder হবে**
     if (source.droppableId === destination.droppableId) {
       const items = Array.from(tasks[source.droppableId]);
       const [reorderedItem] = items.splice(source.index, 1);
       items.splice(destination.index, 0, reorderedItem);
 
-      setTasks((prev) => ({
-        ...prev,
-        [source.droppableId]: items
-      }));
+      fetchTasks(); // ✅ Data Sync হবে
     } else {
-      
+      // **Column Change হলে Backend Update করবো**
       const sourceItems = Array.from(tasks[source.droppableId]);
       const destinationItems = Array.from(tasks[destination.droppableId]);
 
       const [movedItem] = sourceItems.splice(source.index, 1);
+      movedItem.category = destination.droppableId;
+
       destinationItems.splice(destination.index, 0, movedItem);
 
-      setTasks((prev) => ({
-        ...prev,
-        [source.droppableId]: sourceItems,
-        [destination.droppableId]: destinationItems
-      }));
+      // **Optimistic UI Update**
+      fetchTasks();
+
+      try {
+        await axiosPublic.put(`/tasks/${movedItem._id}`, { category: destination.droppableId });
+        toast.success("Task updated successfully!");
+      } catch (error) {
+        toast.error("Failed to update task!");
+        console.error("Error updating task:", error);
+      }
+    }
+  };
+
+  // ✅ **Delete Task Function**
+  const deleteTask = async (taskId) => {
+    try {
+      await axiosPublic.delete(`/tasks/${taskId}`);
+      fetchTasks(); // ✅ **Auto Refresh হবে**
+      toast.success("Task deleted successfully!");
+    } catch (error) {
+      toast.error("Failed to delete task!");
+      console.error("Error deleting task:", error);
     }
   };
 
@@ -69,14 +88,18 @@ const Home = () => {
                     {/* Column Header */}
                     <div className="bg-gray-100 px-4 py-3 border-b border-gray-200">
                       <h2 className="text-gray-700 font-semibold">
-                        {column === "todo" ? "To-Do" : column === "inprogress" ? "In Progress" : "Done"}
+                        {column === "todo"
+                          ? "To-Do"
+                          : column === "inprogress"
+                          ? "In Progress"
+                          : "Done"}
                       </h2>
                     </div>
 
                     {/* Draggable Tasks */}
                     <div className="p-4 space-y-3">
-                      {tasks[column].map((task, index) => (
-                        <Draggable key={task.id} draggableId={task.id} index={index}>
+                      {tasks[column]?.map((task, index) => (
+                        <Draggable key={task._id} draggableId={task._id} index={index}>
                           {(provided) => (
                             <div
                               ref={provided.innerRef}
@@ -96,7 +119,10 @@ const Home = () => {
                                   <button className="text-yellow-500 hover:text-yellow-600">
                                     <Edit size={16} />
                                   </button>
-                                  <button className="text-red-500 hover:text-red-600">
+                                  <button
+                                    className="text-red-500 hover:text-red-600"
+                                    onClick={() => deleteTask(task._id)}
+                                  >
                                     <Trash2 size={16} />
                                   </button>
                                 </div>
