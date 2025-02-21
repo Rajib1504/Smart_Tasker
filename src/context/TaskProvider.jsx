@@ -17,7 +17,7 @@ const TaskProvider = ({ children }) => {
       setLoading(true);
       try {
         const res = await axiosPublic.get(`/tasks/${user.email}`);
-      //   console.log(res.data); // Debugging জন্য console.log
+        console.log(res.data); // Debugging জন্য console.log
         
         if (res.data) {
           const sortedTasks = {
