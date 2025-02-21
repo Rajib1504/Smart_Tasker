@@ -19,7 +19,7 @@ const Home = () => {
 
     const { source, destination } = result;
 
-    // যদি একই কলামের ভিতরে থাকে
+   
     if (source.droppableId === destination.droppableId) {
       const items = Array.from(tasks[source.droppableId]);
       const [reorderedItem] = items.splice(source.index, 1);
@@ -30,7 +30,7 @@ const Home = () => {
         [source.droppableId]: items
       }));
     } else {
-      // যদি ভিন্ন কলামে যায়
+      
       const sourceItems = Array.from(tasks[source.droppableId]);
       const destinationItems = Array.from(tasks[destination.droppableId]);
 

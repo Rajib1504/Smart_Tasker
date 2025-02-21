@@ -1,10 +1,16 @@
 import { toast } from "react-toastify";
 import UseAuth from "../../Hooks/UseAuth/UseAuth";
 import { Link, useNavigate } from "react-router-dom";
+import AxiosPublic from "../../Hooks/UseAxios/AxiosPublic";
+import { useState } from "react";
+import Loading from "../../Shared/Loading/Loading";
 
 
 const Navbar = () => {
       const {user,logOut,Loading:loader,setLoading}=UseAuth()
+      const [spiner,setSpiner]=useState(false)
+      const axiospublic =AxiosPublic()
+      // console.log(axiospublic)
       
       const navigate = useNavigate()
       const logout = () => {
@@ -21,10 +27,10 @@ const Navbar = () => {
                 setLoading(false)
               });
           };
-          const submitTask = (e) => {
+          const submitTask =async (e) => {
+            setSpiner(true)
             e.preventDefault(); 
-            console.log("Form Submitted");
-          
+            // console.log("Form Submitted");
             const form = e.target;
             const title = form.title.value;
             const description = form.description.value;
@@ -32,9 +38,18 @@ const Navbar = () => {
             const date = new Date().toLocaleString(); 
           const formData = { title, description, category, date }
             // console.log({ title, description, category, date });
+          const taskData =await axiospublic.post('/tasks',formData)
+          // console.log(taskData)
+          if(taskData.data.insertedId){
+            setSpiner(false)
+            document.getElementById('my_modal_1').close()
+            return toast.success("Task created successfully!");
+          }else{
+            setSpiner(false)
+            document.getElementById('my_modal_1').close()
+            return toast.error('something went wrong')
+          }
           
-          
-            toast.success("Task created successfully!");
           };
           
       
@@ -104,9 +119,9 @@ const Navbar = () => {
           {/* Modal Actions */}
           <div className="modal-action mt-4">
             
-              <button  onClick={() => document.getElementById('my_modal_1').close()} className="btn btn-ghost hover:bg-[#3674B5] hover:border-white">Close</button>
+              <button type="button"  onClick={() => document.getElementById('my_modal_1').close()} className="btn btn-ghost hover:bg-[#3674B5] hover:border-white">Close</button>
             
-            <button type="submit" className="btn bg-[#3674B5]">Add Task</button> 
+            <button type="submit" className="btn bg-[#3674B5]">{spiner ?<span className="loading loading-spinner loading-sm"></span>: "Add Task"}</button> 
           </div>
         </form>
       </div>
