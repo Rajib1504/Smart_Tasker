@@ -133,7 +133,7 @@ const [editTask, setEditTask] = useState(null);
 
         {/* Task Board */}
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-1  md:grid-cols-3 gap-4 md:gap-6">
             {["todo", "inprogress", "done"].map((column) => (
               <Droppable key={column} droppableId={column}>
                 {(provided) => (
@@ -170,11 +170,11 @@ const [editTask, setEditTask] = useState(null);
                                 </span>
                                 <div className="flex gap-2">
                                   <button onClick={() => handleEdit(task)} className="text-yellow-500 hover:text-yellow-600">
-                                    <Edit size={16} />
+                                    <Edit size={20} />
                                   </button>
-                                  <button className="text-red-500 hover:text-red-600"  
+                                  <button  className="text-red-500  hover:text-red-600"  
                                   onClick={() => deleteTask(task._id)}>
-                                    <Trash2 size={16} />
+                                    <Trash2 size={20} />
                                   </button>
                                 </div>
                               </div>
@@ -206,7 +206,7 @@ const [editTask, setEditTask] = useState(null);
                       required: "Title is required",
                       maxLength: { value: 50, message: "Title cannot exceed 50 characters" }
                     })}
-                    className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                    className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-gray-400 outline-none"
                     placeholder="Enter task title"
                   />
                   {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
@@ -221,7 +221,7 @@ const [editTask, setEditTask] = useState(null);
                       required: "Description is required",
                       maxLength: { value: 200, message: "Description cannot exceed 200 characters" }
                     })}
-                    className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-indigo-400 outline-none h-24 resize-none"
+                    className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-gray-400 outline-none h-24 resize-none"
                     placeholder="Enter task details"
                   ></textarea>
                   {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
@@ -233,7 +233,7 @@ const [editTask, setEditTask] = useState(null);
                   <select
                     defaultValue={editTask?.category}
                     {...register("category", { required: true })}
-                    className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                    className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-gray-400 outline-none"
                   >
                     <option value="" disabled>Category select</option>
                     <option value="todo">To-Do</option>
@@ -242,10 +242,11 @@ const [editTask, setEditTask] = useState(null);
                   </select>
                 </div>
                 <div className="modal-action gap-2">
-                  <button className="btn bg-indigo-600 text-white">Save</button>
-                  <button
+                <button
                     onClick={() => setShowModal(false)}
-                    className="btn text-white bg-rose-500">Close</button>
+                    className="btn btn-ghost hover:bg-[#3674B5] hover:border-white">Close</button>
+                  <button className="btn bg-[#3674B5]">Save</button>
+                 
                 </div>
               </form>
             </div>
