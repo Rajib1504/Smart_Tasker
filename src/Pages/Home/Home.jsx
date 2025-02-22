@@ -8,40 +8,46 @@ import { TaskContext } from "../../context/TaskProvider";
 import Swal from "sweetalert2";
 
 const Home =() => {
-  const { fetchTasks } = useContext(TaskContext);
+  const {tasks, setTasks, fetchTasks } = useContext(TaskContext);
   const {user}=UseAuth()
-  const [tasks, setTasks] = useState({
-    todo: [
+  // const [tasks, setTasks] = useState({
+  //   todo: [
    
-    ],
-    inprogress: [
+  //   ],
+  //   inprogress: [
      
-    ],
-    done: []
-  });
+  //   ],
+  //   done: []
+  // });
   const axiosPublic = AxiosPublic()
-  useEffect(() => {
-    if (!user?.email) return;
     
-    axiosPublic.get(`/tasks/${user.email}`)
-      .then(res => {
-        console.log("Response Data:", res.data);
+    useEffect(() => {
+      if (user?.email) {
+        fetchTasks();
+      }
+    }, [user]); 
+
+  //   if (!user?.email) return;
+    
+  //   axiosPublic.get(`/tasks/${user.email}`)
+  //     .then(res => {
+  //       // console.log("Response Data:", res.data);
   
-        // ✅ API response theke task format set kore dibo
-        const formattedTasks = {
-          todo: res.data.todo || [], 
-          inprogress: res.data.inprogress || [], 
-          done: res.data.done || []
-        };
+  //       // ✅ API response theke task format set kore dibo
+  //       const formattedTasks = {
+  //         todo: res.data.todo || [], 
+  //         inprogress: res.data.inprogress || [], 
+  //         done: res.data.done || []
+  //       };
   
-        setTasks((prev) => ({
-          ...prev,
-          ...formattedTasks
-        }));
+  //       setTasks((prev) => ({
+  //         ...prev,
+  //         ...formattedTasks
+  //       }));
         
-      })
-      .catch(err => console.error("Error fetching tasks:", err));
-  }, [user?.email, tasks]);  // ✅ Dependency array e `tasks` add korsi
+  //     })
+  //     .catch(err => console.error("Error fetching tasks:", err));
+  // }, [user?.email]);  // ✅ Dependency array e `tasks` add korsi
   
   
 
@@ -110,7 +116,9 @@ const Home =() => {
     });
   };
   
-  
+  const UpdateTask =()=>{
+    console.log("")
+  }
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-6">
@@ -160,7 +168,7 @@ const Home =() => {
                                   <Clock className="h-4 w-4 mr-1" /> Created at: 2/21/2025
                                 </span>
                                 <div className="flex gap-2">
-                                  <button className="text-yellow-500 hover:text-yellow-600">
+                                  <button onClick={()=>document.getElementById('my_modal_1').showModal()} className="text-yellow-500 hover:text-yellow-600">
                                     <Edit size={16} />
                                   </button>
                                   <button className="text-red-500 hover:text-red-600"  
@@ -182,6 +190,53 @@ const Home =() => {
           </div>
         </DragDropContext>
       </div>
+      <dialog id="my_modal_1" className="modal">
+      <div className="modal-box">
+        <h3 className="font-bold text-lg text-center">Create Task</h3>
+        <form onSubmit={UpdateTask}> {/* Wrap inputs inside form */}
+          {/* Title Input */}
+          <label className="block text-sm font-medium text-gray-700 mt-2">
+            Title <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            maxLength="50"
+            name="title"
+            placeholder="Enter task title (max 50 characters)"
+            className="input input-bordered w-full mt-2"
+            required
+          />
+
+          {/* Description Input */}
+          <label className="block text-sm font-medium text-gray-700 mt-2">Description</label>
+          <textarea
+            maxLength="200"
+            name="description"
+            placeholder="Enter task description (max 200 characters)"
+            className="textarea textarea-bordered w-full mt-2"
+          ></textarea>
+
+          {/* Timestamp (Auto-Generated) */}
+          <div className="text-sm text-gray-500 mt-2">
+            update at: {new Date().toLocaleString()}
+          </div>
+
+          {/* Category Selection */}
+          <label className="block text-sm font-medium text-gray-700 mt-2">Category</label>
+          <select name="category" className="select select-bordered w-full mt-2">
+            <option value="todo">Todo</option>
+          </select>
+
+          {/* Modal Actions */}
+          <div className="modal-action mt-4">
+            
+              <button type="button"  onClick={() => document.getElementById('my_modal_1').close()} className="btn btn-ghost hover:bg-[#3674B5] hover:border-white">Close</button>
+            
+            <button type="submit" className="btn bg-[#3674B5]"> Add Task</button> 
+          </div>
+        </form>
+      </div>
+    </dialog>
     </div>
   );
 };

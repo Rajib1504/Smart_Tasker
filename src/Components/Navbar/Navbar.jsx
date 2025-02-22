@@ -21,7 +21,7 @@ const Navbar = () => {
             console.log("Logout button clicked");
             logOut()
             .then(() => {
-              fetchTasks([]); // ✅ Clear Task List
+              // fetchTasks(); 
               toast.success("Logout Success");
               navigate('/register');
             })
@@ -34,7 +34,6 @@ const Navbar = () => {
           const submitTask = async (e) => {
             setSpiner(true);
             e.preventDefault(); 
-            
             const form = e.target;
             const title = form.title.value;
             const description = form.description.value;
@@ -53,8 +52,7 @@ const Navbar = () => {
                     setSpiner(false);
                     document.getElementById('my_modal_1').close();
                     form.reset();
-                    
-                    fetchTasks(); // ✅ **Auto Refresh হবে (নতুন টাস্ক লোড হবে)**
+                    fetchTasks(); 
                     toast.success("Task created successfully!");
                 } else {
                     setSpiner(false);
@@ -123,6 +121,7 @@ const Navbar = () => {
           <textarea
             maxLength="200"
             name="description"
+            required
             placeholder="Enter task description (max 200 characters)"
             className="textarea textarea-bordered w-full mt-2"
           ></textarea>

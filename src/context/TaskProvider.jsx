@@ -5,19 +5,18 @@ import UseAuth from "../Hooks/UseAuth/UseAuth";
 export const TaskContext = createContext();
 
 const TaskProvider = ({ children }) => {
-  const [tasks, setTasks] = useState({ todo: [], inProgress: [], done: [] }); // ✅ Task কে আলাদা ক্যাটাগরিতে বিভক্ত করা
+  const [tasks, setTasks] = useState({ todo: [], inprogress: [], done: [] }); 
   const [loading, setLoading] = useState(true);
   const { user } = UseAuth(); 
   const axiosPublic = AxiosPublic();
 
-  // ✅ Task Fetch Function (Auto-Update & Proper Filtering)
   const fetchTasks = async () => {
       if (!user?.email) return; 
   
       setLoading(true);
       try {
         const res = await axiosPublic.get(`/tasks/${user.email}`);
-        console.log(res.data); // Debugging জন্য console.log
+        console.log(res.data);
         
         if (res.data) {
           const sortedTasks = {
@@ -26,6 +25,7 @@ const TaskProvider = ({ children }) => {
             done: res.data.done || []  
           };
           setTasks(sortedTasks);
+          console.log(sortedTasks)
         }
       } catch (error) {
         console.error("Error fetching tasks", error);
@@ -34,14 +34,12 @@ const TaskProvider = ({ children }) => {
       }
     };
   
-
-  // ✅ Component Load হলে Task আনবে এবং User Email পরিবর্তন হলে পুনরায় আনবে।
-  useEffect(() => {
-    fetchTasks();
-  }, [user?.email]); 
+  // useEffect(() => {
+  //   fetchTasks();
+  // }, [user?.email]); 
 
   return (
-    <TaskContext.Provider value={{ tasks, fetchTasks, loading }}>
+    <TaskContext.Provider value={{ tasks, setTasks,fetchTasks, loading }}>
       {children}
     </TaskContext.Provider>
   );
