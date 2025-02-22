@@ -4,14 +4,15 @@ import Loading from './../Shared/Loading/Loading';
 import UseAuth from '../Hooks/UseAuth/UseAuth';
 
 const PrivateRoute = ({children}) => {
-    const {user, loading} = UseAuth();
+    const {user, Loading} = UseAuth();
     const location = useLocation();
 
-    if(loading){
-        return <Loading></Loading>
+    if(Loading){
+        return   <div className='min-h-screen flex justify-center items-center'><span className="loading loading-spinner loading-xl text-[#3674B5]"></span></div>
     }
 
     if(user && user?.email){
+      console.log('user is there')
         return children;
     }
 

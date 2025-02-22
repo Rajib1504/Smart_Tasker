@@ -24,6 +24,7 @@ const Navbar = () => {
               // fetchTasks(); 
               toast.success("Logout Success");
               navigate('/register');
+              setLoading(false)
             })
               .catch((err) => {
                 toast.error(err.message);
