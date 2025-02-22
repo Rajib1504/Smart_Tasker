@@ -72,7 +72,7 @@ const Navbar = () => {
           
       
       return (
-            <div className=" bg-[#3674B5] py-3 container">
+            <div className=" bg-[#3674B5] w-full py-3 ">
                   <div className='lg:w-11/12 text-white mx-auto w-full flex justify-between  items-center'>
                   {/* logo  */}
                  <div>
@@ -84,7 +84,7 @@ const Navbar = () => {
                         <ul className="flex  items-center justify-end gap-2 ">
 
                           {
-                            user &&<li className="text-white"> Welcome {user?.displayName}</li>
+                            user &&<li className="text-white hidden lg:block md:block"> Welcome {user?.displayName}</li>
                           }
                               {user && <li className="btn btn-ghost btn-xs md:btn-md lg:btn-ghost md:btn-ghost hover:bg-[#3674B5] hover:border-white"  onClick={()=>document.getElementById('my_modal_1').showModal()}>+ Create Task</li>  }  
                               {
@@ -140,9 +140,9 @@ const Navbar = () => {
           {/* Modal Actions */}
           <div className="modal-action mt-4">
             
-              <button type="button"  onClick={() => document.getElementById('my_modal_1').close()} className="btn btn-ghost hover:bg-[#3674B5] hover:border-white">Close</button>
+              <button type="button"  onClick={() => document.getElementById('my_modal_1').close()} className="btn btn-ghost cursor-pointer hover:bg-[#3674B5] hover:border-white">Close</button>
             
-            <button type="submit" className="btn bg-[#3674B5]">{spiner ?<span className="loading loading-spinner loading-sm"></span>: "Add Task"}</button> 
+            <button type="submit" className="btn bg-[#3674B5]">{spiner ?<span className="loading loading-spinner cursor-pointer loading-sm"></span>: "Add Task"}</button> 
           </div>
         </form>
       </div>

@@ -21,7 +21,7 @@ const Error = () => {
         
         {/* Home Button */}
         <Link to={'/'}
-          className="inline-flex items-center px-6 py-3 bg-[#3674B5] hover:border-white text-white font-medium rounded-lg transition-colors duration-200 group"
+          className="inline-flex cursor-pointer items-center px-6 py-3 bg-[#3674B5] hover:border-white text-white font-medium rounded-lg transition-colors duration-200 group"
         >
           <ArrowLeft className="h-5 w-5 mr-2 transform group-hover:-translate-x-1 transition-transform duration-200" />
           Back to Home

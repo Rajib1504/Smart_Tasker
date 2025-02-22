@@ -41,11 +41,11 @@ const Register = () => {
         <p className="text-gray-600 mb-6">Simplify your task management with seamless sign-in.</p>
         <button
           onClick={handleGoogleSignIn}
-          className={`w-full flex gap-2 justify-center items-center border-2 border-gray-300 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 &{loader && "disabled"}`}
+          className={`w-full flex gap-2 cursor-pointer justify-center items-center border-2 border-gray-300 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 &{loader && "disabled"}`}
           disabled={loader}
         > {loader ?<Loading/>:<>
             <FcGoogle className="text-2xl" />
-            <span className="text-gray-700 font-semibold">Sign Up with Google</span>
+            <span className="text-gray-700 cursor-pointer font-semibold">Sign Up with Google</span>
           </>}
         </button>
       </div>

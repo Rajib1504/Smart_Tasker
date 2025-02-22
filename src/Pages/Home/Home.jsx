@@ -169,10 +169,10 @@ const [editTask, setEditTask] = useState(null);
                                   <Clock className="h-4 w-4 mr-1" /> Created at: 2/21/2025
                                 </span>
                                 <div className="flex gap-2">
-                                  <button onClick={() => handleEdit(task)} className="text-yellow-500 hover:text-yellow-600">
+                                  <button onClick={() => handleEdit(task)} className="cursor-pointer text-yellow-500 hover:text-yellow-600">
                                     <Edit size={20} />
                                   </button>
-                                  <button  className="text-red-500  hover:text-red-600"  
+                                  <button  className="text-red-500 cursor-pointer  hover:text-red-600"  
                                   onClick={() => deleteTask(task._id)}>
                                     <Trash2 size={20} />
                                   </button>
@@ -244,8 +244,8 @@ const [editTask, setEditTask] = useState(null);
                 <div className="modal-action gap-2">
                 <button
                     onClick={() => setShowModal(false)}
-                    className="btn btn-ghost hover:bg-[#3674B5] hover:border-white">Close</button>
-                  <button className="btn bg-[#3674B5]">Save</button>
+                    className="btn btn-ghost hover:bg-[#3674B5] cursor-pointer hover:border-white">Close</button>
+                  <button className="btn cursor-pointer bg-[#3674B5]">Save</button>
                  
                 </div>
               </form>
