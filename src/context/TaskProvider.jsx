@@ -22,7 +22,7 @@ const TaskProvider = ({ children }) => {
         if (res.data) {
           const sortedTasks = {
             todo: res.data.todo || [],  
-            inProgress: res.data.inprogress || [],  
+            inprogress: res.data.inprogress || [],  
             done: res.data.done || []  
           };
           setTasks(sortedTasks);

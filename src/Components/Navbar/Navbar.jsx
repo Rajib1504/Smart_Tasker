@@ -20,47 +20,56 @@ const Navbar = () => {
             setLoading(true)
             console.log("Logout button clicked");
             logOut()
-              .then(() => {
-                toast.success("Logout Success");
-                setLoading(false)
-                navigate('/register')
-              })
+            .then(() => {
+              fetchTasks([]); // ✅ Clear Task List
+              toast.success("Logout Success");
+              navigate('/register');
+            })
               .catch((err) => {
                 toast.error(err.message);
                 setLoading(false)
               });
           };
           // post data 
-          const submitTask =async (e) => {
-            setSpiner(true)
+          const submitTask = async (e) => {
+            setSpiner(true);
             e.preventDefault(); 
-            // console.log("Form Submitted");
+            
             const form = e.target;
             const title = form.title.value;
             const description = form.description.value;
             const category = form.category.value;
             const date = new Date().toLocaleString(); 
-            const email = user?.email
-            const name = user?.displayName
-            const userId = user?.uid
-          const formData = { title, description, category, date, email,name,userId }
-            // console.log({ title, description, category, date,email,name,userId });
-          const taskData =await axiospublic.post('/tasks',formData)
-          // console.log(taskData)
-          if(taskData.data.insertedId){
-            setSpiner(false)
-            document.getElementById('my_modal_1').close()
-            form.reset();
-            fetchTasks()
-            toast.success("Task created successfully!");
-          }else{
-            setSpiner(false)
-            document.getElementById('my_modal_1').close()
-            form.reset();
-            return toast.error('something went wrong')
-          }
+            const email = user?.email;
+            const name = user?.displayName;
+            const userId = user?.uid;
+            
+            const formData = { title, description, category, date, email, name, userId };
+            
+            try {
+                const taskData = await axiospublic.post('/tasks', formData);
+                
+                if (taskData.data.insertedId) {
+                    setSpiner(false);
+                    document.getElementById('my_modal_1').close();
+                    form.reset();
+                    
+                    fetchTasks(); // ✅ **Auto Refresh হবে (নতুন টাস্ক লোড হবে)**
+                    toast.success("Task created successfully!");
+                } else {
+                    setSpiner(false);
+                    document.getElementById('my_modal_1').close();
+                    form.reset();
+                    toast.error('Something went wrong');
+                }
+            } catch (error) {
+                setSpiner(false);
+                console.error("Error creating task:", error);
+                toast.error("Failed to create task");
+            }
+        };
+        
           
-          };
           
           
       
@@ -75,6 +84,10 @@ const Navbar = () => {
                   {/* links  */}
                   <div>
                         <ul className="flex  items-center justify-end gap-2 ">
+
+                          {
+                            user &&<li className="text-white"> Welcome {user?.displayName}</li>
+                          }
                               {user && <li className="btn btn-ghost btn-xs md:btn-md lg:btn-ghost md:btn-ghost hover:bg-[#3674B5] hover:border-white"  onClick={()=>document.getElementById('my_modal_1').showModal()}>+ Create Task</li>  }  
                               {
                                 user?   <li onClick={logout} className="btn btn-ghost btn-xs md:btn-md lg:btn-ghost md:btn-ghost hover:bg-[#3674B5] hover:border-white">{loader ? <span className="loading loading-spinner loading-sm"></span>:"Log out "}</li>:<Link to={'/register'} className="btn btn-ghost btn-xs md:btn-md lg:btn-ghost md:btn-ghost hover:bg-[#3674B5] hover:border-white">Sign in</Link>   

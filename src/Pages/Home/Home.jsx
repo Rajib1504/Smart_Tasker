@@ -1,11 +1,14 @@
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Clock, Edit, Trash2 } from 'lucide-react';
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import UseAuth from "../../Hooks/UseAuth/UseAuth";
 import AxiosPublic from "../../Hooks/UseAxios/AxiosPublic";
 import { toast } from "react-toastify";
+import { TaskContext } from "../../context/TaskProvider";
+import Swal from "sweetalert2";
 
 const Home =() => {
+  const { fetchTasks } = useContext(TaskContext);
   const {user}=UseAuth()
   const [tasks, setTasks] = useState({
     todo: [
@@ -17,24 +20,28 @@ const Home =() => {
     done: []
   });
   const axiosPublic = AxiosPublic()
-  
   useEffect(() => {
     if (!user?.email) return;
     
     axiosPublic.get(`/tasks/${user.email}`)
       .then(res => {
-        // console.log("Response Data:", res.data);
+        console.log("Response Data:", res.data);
   
-       
+        // ✅ API response theke task format set kore dibo
         const formattedTasks = {
           todo: res.data.todo || [], 
           inprogress: res.data.inprogress || [], 
           done: res.data.done || []
         };
-        setTasks(formattedTasks);
+  
+        setTasks((prev) => ({
+          ...prev,
+          ...formattedTasks
+        }));
+        
       })
       .catch(err => console.error("Error fetching tasks:", err));
-  }, [user?.email]);
+  }, [user?.email, tasks]);  // ✅ Dependency array e `tasks` add korsi
   
   
 
@@ -72,6 +79,7 @@ const Home =() => {
       // ✅ **Backend API Call করে Database-এ Update করবো**
       try {
         await axiosPublic.put(`/tasks/${movedItem._id}`, { category: destination.droppableId });
+        fetchTasks(); // ✅ **Auto Refresh হবে**
         toast.success("Task updated successfully ");
       } catch (error) {
         toast.error("Failed to update task", error);
@@ -79,17 +87,29 @@ const Home =() => {
     }
   };
   
-
-    const deleteTask = async (taskId) => {
-    try {
-      await axiosPublic.delete(`/tasks/${taskId}`);
-      fetchTasks(); // ✅ **Auto Refresh হবে**
-      toast.success("Task deleted successfully!");
-    } catch (error) {
-      toast.error("Failed to delete task!");
-      console.error("Error deleting task:", error);
-    }
+  const deleteTask = async (taskId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axiosPublic.delete(`/tasks/${taskId}`);
+          fetchTasks(); // ✅ **Auto Refresh হবে**
+          
+          toast.success( "Your task has been deleted")
+        } catch (error) {
+          toast.error("Error deleting task:", error);
+        }
+      }
+    });
   };
+  
   
   
   return (
