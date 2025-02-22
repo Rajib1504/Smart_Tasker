@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosPublic = axios.create({
-      baseURL:'http://localhost:9000'
+      baseURL:'https://todo-server-three-pi.vercel.app'
 })
 
 const AxiosPublic = () => {
