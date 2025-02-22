@@ -16,7 +16,7 @@ const TaskProvider = ({ children }) => {
       setLoading(true);
       try {
         const res = await axiosPublic.get(`/tasks/${user.email}`);
-        console.log(res.data);
+        // console.log(res.data);
         
         if (res.data) {
           const sortedTasks = {
@@ -25,7 +25,7 @@ const TaskProvider = ({ children }) => {
             done: res.data.done || []  
           };
           setTasks(sortedTasks);
-          console.log(sortedTasks)
+          // console.log(sortedTasks)
         }
       } catch (error) {
         console.error("Error fetching tasks", error);

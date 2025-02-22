@@ -18,7 +18,7 @@ const Navbar = () => {
       const navigate = useNavigate()
       const logout = () => {
             setLoading(true)
-            console.log("Logout button clicked");
+            // console.log("Logout button clicked");
             logOut()
             .then(() => {
               // fetchTasks(); 

@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const Register = () => {
       const {user,setUser,googleLogin,}=UseAuth()
       const[loader,setLoader]=useState(false)
-      console.log(user)
+      // console.log(user)
       const navigate=useNavigate()
 
   // Google login handler
@@ -20,13 +20,13 @@ const Register = () => {
             email: res.user.email,
             name: res.user.displayName
       }
-      console.log(userInfo)
+      // console.log(userInfo)
       setUser(res.user)
      toast.success(`Welcome,${userInfo.name}`)
      setLoader(false)
      navigate('/');
     }).catch(err=>{
-      console.log(err.message)
+      // console.log(err.message)
           toast.error('err.message')
           setLoader(false)
     }

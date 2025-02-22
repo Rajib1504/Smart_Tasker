@@ -6,19 +6,16 @@ import AxiosPublic from "../../Hooks/UseAxios/AxiosPublic";
 import { toast } from "react-toastify";
 import { TaskContext } from "../../context/TaskProvider";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
 
 const Home =() => {
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const [showModal, setShowModal] = useState(false);
+const [editTask, setEditTask] = useState(null);
   const {tasks, setTasks, fetchTasks } = useContext(TaskContext);
+  // console.log(tasks)
   const {user}=UseAuth()
-  // const [tasks, setTasks] = useState({
-  //   todo: [
-   
-  //   ],
-  //   inprogress: [
-     
-  //   ],
-  //   done: []
-  // });
+ 
   const axiosPublic = AxiosPublic()
     
     useEffect(() => {
@@ -27,36 +24,11 @@ const Home =() => {
       }
     }, [user]); 
 
-  //   if (!user?.email) return;
-    
-  //   axiosPublic.get(`/tasks/${user.email}`)
-  //     .then(res => {
-  //       // console.log("Response Data:", res.data);
-  
-  //       // ✅ API response theke task format set kore dibo
-  //       const formattedTasks = {
-  //         todo: res.data.todo || [], 
-  //         inprogress: res.data.inprogress || [], 
-  //         done: res.data.done || []
-  //       };
-  
-  //       setTasks((prev) => ({
-  //         ...prev,
-  //         ...formattedTasks
-  //       }));
-        
-  //     })
-  //     .catch(err => console.error("Error fetching tasks:", err));
-  // }, [user?.email]);  // ✅ Dependency array e `tasks` add korsi
-  
-  
-
   const handleDragEnd = async (result) => {
     if (!result.destination) return;
   
     const { source, destination } = result;
-  
-    // Same column-এর ভিতরে Move হলে শুধু Reorder করবো
+
     if (source.droppableId === destination.droppableId) {
       const items = Array.from(tasks[source.droppableId]);
       const [reorderedItem] = items.splice(source.index, 1);
@@ -67,12 +39,12 @@ const Home =() => {
         [source.droppableId]: items
       }));
     } else {
-      // আলাদা Column-এ Move হলে Database Update করতে হবে!
+   
       const sourceItems = Array.from(tasks[source.droppableId]);
       const destinationItems = Array.from(tasks[destination.droppableId]);
   
       const [movedItem] = sourceItems.splice(source.index, 1);
-      movedItem.category = destination.droppableId; // ✅ নতুন Category Update
+      movedItem.category = destination.droppableId; 
   
       destinationItems.splice(destination.index, 0, movedItem);
   
@@ -81,18 +53,49 @@ const Home =() => {
         [source.droppableId]: sourceItems,
         [destination.droppableId]: destinationItems
       }));
-  
-      // ✅ **Backend API Call করে Database-এ Update করবো**
+
       try {
-        await axiosPublic.put(`/tasks/${movedItem._id}`, { category: destination.droppableId });
-        fetchTasks(); // ✅ **Auto Refresh হবে**
+        await axiosPublic.patch(`/tasks/${movedItem._id}`, { category: destination.droppableId });
+        fetchTasks(); 
         toast.success("Task updated successfully ");
       } catch (error) {
         toast.error("Failed to update task", error);
       }
     }
   };
+  const handleEdit = (task) => {
+    setEditTask(task);
+    setShowModal(true);
+  };
   
+  const onSubmit = async (data) => {
+    if (editTask) {
+      // Update task (PUT request)
+      try {
+        const response = await axiosPublic.put(`/tasks/${editTask._id}`, {
+          title: data.title,
+          description: data.description,
+          category: data.category,
+          // timestamp: new Date().toISOString(),
+          // userEmail: user?.email,
+        });
+
+        // console.log("Task Updated:", response.data);
+        toast.success("Task updated successfully!");
+        fetchTasks();
+        setShowModal(false);
+        setEditTask(null);
+        reset();
+      } catch (error) {
+        console.error("Error updating task:", error);
+        toast.error("Failed to update task. Please try again.");
+      }
+
+    }
+  };
+
+
+
   const deleteTask = async (taskId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -106,7 +109,7 @@ const Home =() => {
       if (result.isConfirmed) {
         try {
           await axiosPublic.delete(`/tasks/${taskId}`);
-          fetchTasks(); // ✅ **Auto Refresh হবে**
+          fetchTasks(); 
           
           toast.success( "Your task has been deleted")
         } catch (error) {
@@ -116,9 +119,7 @@ const Home =() => {
     });
   };
   
-  const UpdateTask =()=>{
-    console.log("")
-  }
+  
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-6">
@@ -168,7 +169,7 @@ const Home =() => {
                                   <Clock className="h-4 w-4 mr-1" /> Created at: 2/21/2025
                                 </span>
                                 <div className="flex gap-2">
-                                  <button onClick={()=>document.getElementById('my_modal_1').showModal()} className="text-yellow-500 hover:text-yellow-600">
+                                  <button onClick={() => handleEdit(task)} className="text-yellow-500 hover:text-yellow-600">
                                     <Edit size={16} />
                                   </button>
                                   <button className="text-red-500 hover:text-red-600"  
@@ -190,53 +191,67 @@ const Home =() => {
           </div>
         </DragDropContext>
       </div>
-      <dialog id="my_modal_1" className="modal">
-      <div className="modal-box">
-        <h3 className="font-bold text-lg text-center">Create Task</h3>
-        <form onSubmit={UpdateTask}> {/* Wrap inputs inside form */}
-          {/* Title Input */}
-          <label className="block text-sm font-medium text-gray-700 mt-2">
-            Title <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            maxLength="50"
-            name="title"
-            placeholder="Enter task title (max 50 characters)"
-            className="input input-bordered w-full mt-2"
-            required
-          />
+      {
+        showModal && (
+          <div className="modal modal-open">
+            <div className="modal-box">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+                {/* Task Title */}
+                <div>
+                  <label className="block text-gray-700 font-medium">Task Title <span className="text-red-500">*</span></label>
+                  <input
+                    defaultValue={editTask?.title}
+                    type="text"
+                    {...register("title", {
+                      required: "Title is required",
+                      maxLength: { value: 50, message: "Title cannot exceed 50 characters" }
+                    })}
+                    className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                    placeholder="Enter task title"
+                  />
+                  {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
+                </div>
 
-          {/* Description Input */}
-          <label className="block text-sm font-medium text-gray-700 mt-2">Description</label>
-          <textarea
-            maxLength="200"
-            name="description"
-            placeholder="Enter task description (max 200 characters)"
-            className="textarea textarea-bordered w-full mt-2"
-          ></textarea>
+                {/* Description */}
+                <div>
+                  <label className="block text-gray-700 font-medium">Description <span className="text-red-500">*</span></label>
+                  <textarea
+                    defaultValue={editTask?.description}
+                    {...register("description", {
+                      required: "Description is required",
+                      maxLength: { value: 200, message: "Description cannot exceed 200 characters" }
+                    })}
+                    className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-indigo-400 outline-none h-24 resize-none"
+                    placeholder="Enter task details"
+                  ></textarea>
+                  {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
+                </div>
 
-          {/* Timestamp (Auto-Generated) */}
-          <div className="text-sm text-gray-500 mt-2">
-            update at: {new Date().toLocaleString()}
+                {/* Category */}
+                <div>
+                  <label className="block text-gray-700 font-medium">Category  <span className="text-red-500">*</span></label>
+                  <select
+                    defaultValue={editTask?.category}
+                    {...register("category", { required: true })}
+                    className="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                  >
+                    <option value="" disabled>Category select</option>
+                    <option value="todo">To-Do</option>
+                    <option value="inprogress">In Progress</option>
+                    <option value="done">Done</option>
+                  </select>
+                </div>
+                <div className="modal-action gap-2">
+                  <button className="btn bg-indigo-600 text-white">Save</button>
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="btn text-white bg-rose-500">Close</button>
+                </div>
+              </form>
+            </div>
           </div>
-
-          {/* Category Selection */}
-          <label className="block text-sm font-medium text-gray-700 mt-2">Category</label>
-          <select name="category" className="select select-bordered w-full mt-2">
-            <option value="todo">Todo</option>
-          </select>
-
-          {/* Modal Actions */}
-          <div className="modal-action mt-4">
-            
-              <button type="button"  onClick={() => document.getElementById('my_modal_1').close()} className="btn btn-ghost hover:bg-[#3674B5] hover:border-white">Close</button>
-            
-            <button type="submit" className="btn bg-[#3674B5]"> Add Task</button> 
-          </div>
-        </form>
-      </div>
-    </dialog>
+        )
+      }
     </div>
   );
 };
